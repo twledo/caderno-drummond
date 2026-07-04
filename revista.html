@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Caderno de Leitura — Carlos Drummond de Andrade</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,900;1,9..144,600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  /* =========================================================
+     TOKENS — troque aqui a paleta/tipografia da revista inteira
+     ========================================================= */
+  :root{
+    --mesa:        #0c0908;
+    --capa:        #3b1220;
+    --capa-escura: #240710;
+    --papel:       #f6efe1;
+    --papel-sombra:#e6d9c2;
+    --dourado:     #b6934f;
+    --dourado-claro:#dcbb85;
+    --tinta:       #221912;
+    --tinta-vermelha:#7a2020;
+    --verde-mata:  #4b5c46;
+
+    --fonte-titulo: "Fraunces", serif;
+    --fonte-corpo:  "Source Serif 4", serif;
+    --fonte-mono:   "IBM Plex Mono", monospace;
+
+    --largura-livro: 1000px;
+    --altura-livro:  640px;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html,body{
+    margin:0; height:100%;
+    background: var(--mesa);
+    background-image:
+      radial-gradient(ellipse at 50% 20%, rgba(255,255,255,0.04), transparent 60%),
+      repeating-linear-gradient(45deg, rgba(255,255,255,0.012) 0 2px, transparent 2px 4px);
+    color: var(--papel);
+    font-family: var(--fonte-corpo);
+    overflow: hidden;
+  }
+
+  .palco{
+    height:100%;
+    display:flex;
+    flex-direction: column;
+    align-items:center;
+    justify-content:center;
+    gap: 18px;
+  }
+
+  .topo{
+    position:absolute; top:22px; left:28px;
+    font-family: var(--fonte-mono);
+    font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+    color: var(--dourado-claro); opacity:.75;
+  }
+
+  #escalador{ transform-origin: center center; position:relative; }
+
+  .livro{
+    position:relative;
+    width: var(--largura-livro);
+    height: var(--altura-livro);
+    filter: drop-shadow(0 30px 45px rgba(0,0,0,.55)) drop-shadow(0 4px 10px rgba(0,0,0,.4));
+  }
+
+  .lombada{
+    position:absolute; left:50%; top:-6px; bottom:-6px; width:46px;
+    transform: translateX(-50%);
+    background: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.35) 50%, rgba(0,0,0,0) 100%);
+    z-index: 5; pointer-events:none;
+  }
+
+  .base{
+    position:absolute; top:0; width:50%; height:100%;
+    background: var(--papel); z-index:0;
+    display:flex; align-items:center; justify-content:center; text-align:center;
+  }
+  .base-esq{ left:0; border-radius: 3px 0 0 3px;}
+  .base-dir{ right:0; border-radius: 0 3px 3px 0;}
+  .base .marca{
+    font-family: var(--fonte-mono); font-size:11px; letter-spacing:.15em;
+    text-transform:uppercase; color: var(--papel-sombra); opacity:.9;
+  }
+
+  .folha{
+    position:absolute; top:0; right:0; width:50%; height:100%;
+    transform-origin: left center; transform-style: preserve-3d;
+    transition: transform 1.05s cubic-bezier(.62,.04,.36,1);
+    transform: rotateY(0deg);
+  }
+  .folha.virada{ transform: rotateY(-180deg); }
+
+  .face{
+    position:absolute; inset:0; backface-visibility:hidden;
+    background: var(--papel); overflow:hidden; padding: 44px 40px;
+  }
+  .face.verso{ transform: rotateY(180deg); }
+  .face.frente{ border-radius: 0 3px 3px 0; box-shadow: inset 10px 0 20px -14px rgba(0,0,0,.25);}
+  .face.verso{  border-radius: 3px 0 0 3px; box-shadow: inset -10px 0 20px -14px rgba(0,0,0,.25);}
+
+  .folha:not(.virada) .frente::after,
+  .base-dir::after{
+    content:""; position:absolute; right:0; bottom:0; width:46px; height:46px;
+    background: linear-gradient(135deg, transparent 50%, rgba(0,0,0,.09) 50%);
+    opacity:0; transition: opacity .25s;
+  }
+  .livro:hover .folha:not(.virada) .frente::after,
+  .livro:hover .base-dir::after{ opacity:1; }
+
+  /* ---------- CAPA ---------- */
+  .pg-capa{
+    background: var(--capa);
+    background-image:
+      radial-gradient(circle at 30% 20%, rgba(255,255,255,.05), transparent 45%),
+      repeating-linear-gradient(0deg, rgba(0,0,0,.05) 0 1px, transparent 1px 3px);
+    color: var(--dourado-claro);
+    display:flex; flex-direction:column; justify-content:space-between;
+    padding: 40px 36px !important;
+    border: 10px solid var(--capa-escura);
+    box-shadow: inset 0 0 0 2px rgba(182,147,79,.35);
+  }
+  .pg-capa .eyebrow{ font-family: var(--fonte-mono); font-size:11px; letter-spacing:.2em; text-transform:uppercase; color: var(--dourado); }
+  .pg-capa h1{
+    font-family: var(--fonte-titulo); font-weight:900; font-size:52px; line-height:1.02;
+    margin:14px 0 6px; letter-spacing:-.005em; text-shadow: 0 2px 0 rgba(0,0,0,.35);
+  }
+  .pg-capa .subtitulo{ font-style:italic; font-family: var(--fonte-titulo); font-weight:600; font-size:17px; color: var(--papel-sombra); max-width: 320px; }
+  .pg-capa .chamadas{ font-family: var(--fonte-mono); font-size:12px; line-height:2; color: var(--dourado-claro); opacity:.9; }
+  .pg-capa .chamadas span{ color: var(--dourado); margin-right:8px; }
+  .pg-capa .rodape-capa{
+    display:flex; justify-content:space-between; align-items:center;
+    font-family: var(--fonte-mono); font-size:11px; letter-spacing:.08em; color: var(--dourado);
+    border-top: 1px solid rgba(182,147,79,.35); padding-top:12px;
+  }
+  .pg-capa .campo-turma{ font-family: var(--fonte-mono); font-size:11px; color: var(--papel-sombra); border-bottom:1px dashed var(--dourado); padding-bottom:4px; margin-top:16px; }
+
+  /* ---------- CONTRACAPA ---------- */
+  .pg-contracapa{
+    background: var(--capa); color: var(--dourado-claro);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; gap:14px;
+    border: 10px solid var(--capa-escura); box-shadow: inset 0 0 0 2px rgba(182,147,79,.35);
+  }
+  .pg-contracapa .selo{
+    width:64px; height:64px; border:1px solid var(--dourado); border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-family: var(--fonte-titulo); font-weight:900; font-size:20px; color: var(--dourado);
+  }
+  .pg-contracapa p{ font-size:12px; font-family: var(--fonte-mono); letter-spacing:.08em; color:var(--papel-sombra); max-width:300px; }
+
+  /* ---------- miolo comum ---------- */
+  .eyebrow-editorial{
+    font-family: var(--fonte-mono); font-size:11px; letter-spacing:.15em; text-transform:uppercase;
+    color: var(--tinta-vermelha); display:flex; align-items:center; gap:8px;
+  }
+  .eyebrow-editorial::before{ content:""; width:16px; height:1px; background:var(--tinta-vermelha); }
+
+  h2.titulo-materia{
+    font-family: var(--fonte-titulo); font-weight:600; font-style:italic;
+    font-size:27px; color: var(--tinta); margin:8px 0 12px; line-height:1.15;
+  }
+  .fonte-poema{ font-family: var(--fonte-mono); font-size:10.5px; color: var(--verde-mata); letter-spacing:.04em; margin:-6px 0 14px; }
+
+  .texto-corpo{ color: var(--tinta); font-size:13.5px; line-height:1.62; }
+  .texto-corpo p{ margin:0 0 10px; }
+  .texto-corpo .capitular::first-letter{
+    font-family: var(--fonte-titulo); font-weight:900; font-size:40px; float:left;
+    line-height:.8; padding-right:8px; padding-top:3px; color: var(--tinta-vermelha);
+  }
+
+  .numero-pagina{
+    position:absolute; bottom:18px; font-family: var(--fonte-mono); font-size:10px;
+    letter-spacing:.1em; color: var(--papel-sombra); opacity:.9;
+  }
+  .face.frente .numero-pagina{ right:20px; }
+  .face.verso  .numero-pagina{ left:20px; }
+
+  .cabecalho-secao{
+    font-family: var(--fonte-mono); font-size:9px; letter-spacing:.14em; text-transform:uppercase;
+    color: var(--papel-sombra); position:absolute; top:20px; left:40px; right:40px;
+    display:flex; justify-content:space-between; opacity:.85;
+  }
+
+  /* ---------- caixa de atividade ---------- */
+  .caixa-atividade{
+    margin-top: 12px; padding: 12px 14px;
+    border: 1px dashed var(--dourado);
+    background: rgba(182,147,79,.08);
+    border-radius: 4px;
+    color: #000000; /* ADICIONE ESTA LINHA */
+  }
+  .caixa-atividade .rotulo{
+    font-family: var(--fonte-mono); font-size:9.5px; letter-spacing:.1em; text-transform:uppercase;
+    color: var(--tinta-vermelha); margin-bottom:6px; display:block;
+  }
+  .caixa-atividade p{ font-size:12.5px; line-height:1.55; margin:0 0 6px; color: #000000; } /* ADICIONE A COR AQUI TAMBÉM */
+  .caixa-atividade ul{ margin:4px 0 0 16px; padding:0; font-size:12.5px; line-height:1.5; color: #000000; } /* E AQUI */
+  /* ---------- espaço para o trabalho do aluno (imagem) ----------
+     Cada bloco tenta carregar uma imagem real. Se o arquivo não existir
+     (porque você ainda não colocou o PDF/imagem na pasta "imagens/"),
+     mostra um aviso claro no lugar — nada quebra visualmente.       */
+  .espaco-imagem{
+    position:relative; width:100%; border-radius:4px; overflow:hidden;
+    border: 1px solid var(--papel-sombra); background: #fff;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .espaco-imagem img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .marcador-vazio{
+    display:none; flex-direction:column; align-items:center; justify-content:center; gap:6px;
+    width:100%; height:100%; padding:16px; text-align:center;
+    background: repeating-linear-gradient(135deg, #fff 0 10px, #f1e9d7 10px 20px);
+    font-family: var(--fonte-mono); font-size:10.5px; color: var(--tinta); opacity:.75;
+  }
+
+  .campo-escrita{
+    margin-top:10px; min-height: 20px; padding: 4px 2px;
+    border-bottom: 1px dashed var(--papel-sombra);
+    font-family: var(--fonte-corpo); font-size:13px; color: var(--tinta);
+  }
+  .campo-escrita:empty::before{ content: attr(data-placeholder); color: var(--papel-sombra); font-style:italic; }
+  .campo-escrita:focus{ outline:none; border-bottom-color: var(--tinta-vermelha); }
+
+  /* ---------- sumário ---------- */
+  .lista-sumario{ list-style:none; margin:16px 0 0; padding:0; }
+  .lista-sumario li{
+    display:flex; align-items:baseline; gap:10px;
+    font-family: var(--fonte-mono); font-size:12.5px; color: var(--tinta);
+    padding:10px 0; border-bottom: 1px dotted var(--papel-sombra); cursor:pointer;
+  }
+  .lista-sumario li:hover{ color: var(--tinta-vermelha); }
+  .lista-sumario .num{ color: var(--dourado); font-weight:500; width:20px; }
+  .lista-sumario .pag{ margin-left:auto; opacity:.6; }
+
+  .creditos dt{ font-family: var(--fonte-mono); font-size:10px; text-transform:uppercase; letter-spacing:.1em; color:var(--tinta-vermelha); margin-top:12px;}
+  .creditos dd{ margin:2px 0 0; font-size:12.5px; }
+
+  /* ---------- grade das sete faces ---------- */
+  .grade-sete{ display:grid; grid-template-columns: repeat(4, 1fr); gap:6px; margin-top:10px; }
+  .grade-sete .celula{ aspect-ratio: 1; }
+  .grade-sete .celula:nth-child(5){ grid-column: 1 / 3; }
+  .grade-sete .marcador-vazio{ font-size:8.5px; padding:6px; }
+
+  /* ---------- abas laterais ---------- */
+  .abas{ position:absolute; top:60px; right:-1px; display:flex; flex-direction:column; gap:8px; z-index:6; }
+  .aba{
+    font-family: var(--fonte-mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase;
+    color: var(--capa-escura); background: var(--dourado);
+    padding:8px 10px 8px 12px; border-radius: 3px 0 0 3px;
+    cursor:pointer; box-shadow: -2px 2px 6px rgba(0,0,0,.35);
+    transition: transform .18s, background .18s; border-right: 3px solid var(--capa-escura);
+  }
+  .aba:hover{ transform: translateX(-6px); }
+  .aba.ativa{ background: var(--tinta-vermelha); color: var(--papel); }
+
+  .controles{ display:flex; align-items:center; gap:18px; font-family: var(--fonte-mono); font-size:12px; color: var(--dourado-claro); }
+  .controles button{
+    all:unset; cursor:pointer; width:38px; height:38px; border-radius:50%;
+    background: rgba(255,255,255,.06); border:1px solid rgba(182,147,79,.4);
+    display:flex; align-items:center; justify-content:center; color: var(--dourado-claro);
+    font-size:16px; transition: background .15s, opacity .15s;
+  }
+  .controles button:hover{ background: rgba(182,147,79,.25); }
+  .controles button:disabled{ opacity:.3; cursor:default; }
+  .controles button:disabled:hover{ background: rgba(255,255,255,.06); }
+  .contador{ letter-spacing:.08em; min-width: 100px; text-align:center; }
+
+  .dica{ font-family: var(--fonte-mono); font-size:10.5px; color: var(--dourado-claro); opacity:.55; letter-spacing:.05em; }
+
+  @media (max-width: 720px){ .abas{ display:none; } }
+</style>
+</head>
+<body>
+
+<div class="topo">Caderno de leitura · Carlos Drummond de Andrade</div>
+
+<div class="palco">
+
+  <div id="escalador">
+    <div class="livro" id="livro">
+
+      <div class="base base-esq"><span class="marca">Drummond</span></div>
+      <div class="base base-dir"><span class="marca">Drummond</span></div>
+      <div class="lombada"></div>
+
+      <!-- ============================================================
+           CADA <div class="folha"> = UMA FOLHA FÍSICA (frente/verso).
+           Onde diz "espaço para o trabalho do aluno", tem uma <img>
+           apontando para um arquivo em imagens/. Exporte o PDF do
+           trabalho do aluno como JPG/PNG, coloque na pasta "imagens"
+           com o NOME exato indicado, e a foto aparece automaticamente
+           — sem precisar editar nenhum código.
+           ============================================================ -->
+
+      <!-- FOLHA 1 — Capa / Sumário -->
+      <div class="folha" data-index="0" style="z-index:105;">
+        <div class="face frente pg-capa">
+          <div>
+            <div class="eyebrow">Atividade de leitura</div>
+            <h1>Carlos Drummond<br>de Andrade</h1>
+            <div class="subtitulo">um poeta, três atividades, e o espaço para você se encontrar em cada uma delas.</div>
+            <div class="campo-turma">Nome: ______________________  Turma: _______</div>
+          </div>
+          <div class="chamadas">
+            <div><span>—</span>Sessão 1 — Marcas da vida</div>
+            <div><span>—</span>Sessão 2 — Sete faces do eu leitor</div>
+            <div><span>—</span>Sessão 3 — A xícara de cacos</div>
+          </div>
+          <div class="rodape-capa"><span>Caderno de leitura</span><span>Língua Portuguesa</span></div>
+        </div>
+        <div class="face verso">
+          <div class="cabecalho-secao"><span>Drummond</span><span>Sumário</span></div>
+          <div class="eyebrow-editorial">Nesta edição</div>
+          <h2 class="titulo-materia">Sumário</h2>
+          <ol class="lista-sumario">
+            <li onclick="pularPara(1)"><span class="num">01</span> Introdução — quem foi Drummond <span class="pag">pág. 03</span></li>
+            <li onclick="pularPara(1)"><span class="num">02</span> Sessão 1 — Marcas da vida <span class="pag">pág. 04</span></li>
+            <li onclick="pularPara(2)"><span class="num">03</span> Sessão 2 — Sete faces do eu leitor <span class="pag">pág. 06</span></li>
+            <li onclick="pularPara(3)"><span class="num">04</span> Sessão 3 — A xícara de cacos <span class="pag">pág. 08</span></li>
+            <li onclick="pularPara(4)"><span class="num">05</span> Encerramento <span class="pag">pág. 10</span></li>
+          </ol>
+          <div class="numero-pagina">02</div>
+        </div>
+      </div>
+
+      <!-- FOLHA 2 — Introdução / Sessão 1 (texto) -->
+      <div class="folha" data-index="1" style="z-index:104;">
+        <div class="face frente">
+          <div class="cabecalho-secao"><span>Introdução</span><span>Drummond</span></div>
+          <div class="eyebrow-editorial">Quem foi o poeta</div>
+          <h2 class="titulo-materia">O poeta da circunstância</h2>
+          <div class="texto-corpo">
+            <p class="capitular">Carlos Drummond de Andrade nasceu em Itabira, Minas Gerais, em 1902, e morreu no Rio de Janeiro em 1987. É considerado um dos nomes centrais da poesia brasileira do século XX.</p>
+            <p>Sua obra atravessa fases distintas — da ironia inicial ao engajamento social, da introspecção madura à leveza dos últimos livros — mas mantém, do início ao fim, um olhar atento ao cotidiano, à passagem do tempo e às pequenas contradições de ser gente.</p>
+            <p>É chamado de "poeta da circunstância" porque transformava situações simples do dia a dia — um objeto quebrado, uma lembrança, uma rua — em reflexões sobre a existência. É esse gesto que as três atividades a seguir convidam você a repetir, olhando para a própria vida.</p>
+          </div>
+          <div class="numero-pagina">03</div>
+        </div>
+        <div class="face verso">
+          <div class="cabecalho-secao"><span>Sessão 1</span><span>Marcas da vida</span></div>
+          <div class="eyebrow-editorial">Sessão 1</div>
+          <h2 class="titulo-materia">Marcas da vida</h2>
+          <div class="texto-corpo">
+            <p class="capitular">Se cada fase importante da vida de Drummond fosse uma marca no corpo, qual seria? Uma cicatriz, uma tatuagem, um arranhão, uma pintura?</p>
+            <p>A trajetória do poeta foi atravessada por perdas, afetos, deslocamentos e uma reflexão constante sobre o tempo. Pense nessas fases como marcas visíveis — cada uma contando, à sua maneira, uma parte da história.</p>
+          </div>
+          <div class="caixa-atividade">
+            <span class="rotulo">Atividade</span>
+            <p>Produza uma imagem (com IA, Canva, Photoshop ou outra ferramenta) que represente essa marca — sua ou do poeta — explicando o que a causou e como ela apareceria se estivesse exposta.</p>
+            <p>Acompanhe a imagem de uma legenda curta ou de um texto reflexivo.</p>
+          </div>
+          <div class="numero-pagina">04</div>
+        </div>
+      </div>
+
+      <!-- FOLHA 3 — Sessão 1 (espaço) / Sessão 2 (texto) -->
+      <div class="folha" data-index="2" style="z-index:103;">
+        <div class="face frente">
+          <div class="cabecalho-secao"><span>Sessão 1</span><span>Trabalho do aluno</span></div>
+          <div class="eyebrow-editorial">Sua marca</div>
+          <h2 class="titulo-materia">Espaço para o seu trabalho</h2>
+          <div class="espaco-imagem" style="height:280px; margin-top:10px;">
+            <img src="imagens/sessao1.jpg" alt="Trabalho do aluno — Sessão 1"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="marcador-vazio">📎 coloque aqui o arquivo<br><strong>imagens/sessao1.jpg</strong></div>
+          </div>
+          <div class="campo-escrita" contenteditable="true" data-placeholder="Legenda ou texto reflexivo do aluno..."></div>
+          <div class="numero-pagina">05</div>
+        </div>
+        <div class="face verso">
+          <div class="cabecalho-secao"><span>Sessão 2</span><span>Sete faces</span></div>
+          <div class="eyebrow-editorial">Sessão 2</div>
+          <h2 class="titulo-materia">Sete faces do eu leitor</h2>
+          <div class="fonte-poema">a partir de "Quando nasci, um anjo torto", C. Drummond de Andrade</div>
+          <div class="texto-corpo">
+            <p class="capitular">Nesse poema, Drummond descreve um "eu" que se sente fora de lugar — "gauche na vida" — e observa o mundo em fragmentos: pernas na rua, um bigode, a lua, um copo de conhaque. São várias faces de uma mesma pessoa, alternando ironia, espanto e ternura.</p>
+            <p>Assim como o eu do poema, você também tem várias "faces" como leitor — momentos diferentes que moldaram a sua relação com os livros.</p>
+          </div>
+          <div class="caixa-atividade">
+            <span class="rotulo">Atividade</span>
+            <p>Monte uma colagem em 7 partes (mapa mental) no Canva ou numa ferramenta de IA, representando 7 momentos da sua trajetória como leitor(a). Sugestões:</p>
+            <ul>
+              <li>Primeiro livro</li>
+              <li>Leitura marcante / que mudou sua visão de mundo</li>
+              <li>Um livro que te fez rir, chorar ou pensar</li>
+              <li>Leitura da infância</li>
+              <li>Leitura recente</li>
+              <li>Leitura que você recomendaria</li>
+            </ul>
+          </div>
+          <div class="numero-pagina">06</div>
+        </div>
+      </div>
+
+      <!-- FOLHA 4 — Sessão 2 (espaço) / Sessão 3 (texto) -->
+      <div class="folha" data-index="3" style="z-index:102;">
+        <div class="face frente">
+          <div class="cabecalho-secao"><span>Sessão 2</span><span>Trabalho do aluno</span></div>
+          <div class="eyebrow-editorial">Sua colagem</div>
+          <h2 class="titulo-materia">As sete faces</h2>
+          <div class="grade-sete">
+            <div class="celula espaco-imagem">
+              <img src="imagens/sessao2-face1.jpg" alt="Face 1" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+              <div class="marcador-vazio">face 1</div>
+            </div>
+            <div class="celula espaco-imagem">
+              <img src="imagens/sessao2-face2.jpg" alt="Face 2" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+              <div class="marcador-vazio">face 2</div>
+            </div>
+            <div class="celula espaco-imagem">
+              <img src="imagens/sessao2-face3.jpg" alt="Face 3" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+              <div class="marcador-vazio">face 3</div>
+            </div>
+            <div class="celula espaco-imagem">
+              <img src="imagens/sessao2-face4.jpg" alt="Face 4" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+              <div class="marcador-vazio">face 4</div>
+            </div>
+            <div class="celula espaco-imagem">
+              <img src="imagens/sessao2-face5.jpg" alt="Face 5" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+              <div class="marcador-vazio">face 5</div>
+            </div>
+          </div>
+          <div class="numero-pagina">07</div>
+        </div>
+        <div class="face verso">
+          <div class="cabecalho-secao"><span>Sessão 3</span><span>A xícara de cacos</span></div>
+          <div class="eyebrow-editorial">Sessão 3</div>
+          <h2 class="titulo-materia">A xícara de cacos</h2>
+          <div class="fonte-poema">a partir de "Cerâmica", C. Drummond de Andrade</div>
+          <div class="texto-corpo">
+            <p class="capitular">Em poucos versos, Drummond descreve uma xícara feita de cacos colados — sem uso prático, mas guardada no aparador, observando a casa. É uma imagem da vida como algo remendado: pedaços quebrados que, juntos, formam algo novo e imperfeito, mas carregado de sentido.</p>
+          </div>
+          <div class="caixa-atividade">
+            <span class="rotulo">Atividade</span>
+            <p>A partir dos "cacos" da sua própria trajetória (experiências, memórias, alegrias, dores, aprendizados), crie a sua xícara — em Canva, colagem física digitalizada, ou outra ferramenta. Pense em:</p>
+            <ul>
+              <li>Quais foram os principais "cacos" da sua trajetória?</li>
+              <li>Como eles se encaixam para formar algo único?</li>
+              <li>O que essa xícara revela sobre você hoje?</li>
+            </ul>
+          </div>
+          <div class="numero-pagina">08</div>
+        </div>
+      </div>
+
+      <!-- FOLHA 5 — Sessão 3 (espaço) / Contracapa -->
+      <div class="folha" data-index="4" style="z-index:101;">
+        <div class="face frente">
+          <div class="cabecalho-secao"><span>Sessão 3</span><span>Trabalho do aluno</span></div>
+          <div class="eyebrow-editorial">Sua xícara</div>
+          <h2 class="titulo-materia">Espaço para a sua xícara</h2>
+          <div class="espaco-imagem" style="height:260px; margin-top:10px;">
+            <img src="imagens/sessao3.jpg" alt="Trabalho do aluno — Sessão 3"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="marcador-vazio">📎 coloque aqui o arquivo<br><strong>imagens/sessao3.jpg</strong></div>
+          </div>
+          <div class="campo-escrita" contenteditable="true" data-placeholder="O que essa xícara revela sobre você hoje?"></div>
+          <div class="numero-pagina">09</div>
+        </div>
+        <div class="face verso pg-contracapa">
+          <div class="selo">D</div>
+          <div style="font-family:var(--fonte-titulo); font-style:italic; font-weight:600; font-size:16px;">Carlos Drummond de Andrade</div>
+          <p>cada caco tem seu lugar.<br>mundo mundo vasto mundo — o seu coração é mais vasto ainda.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="abas" id="abas">
+    <div class="aba" onclick="pularPara(0,'capa')" data-secao="capa">Capa</div>
+    <div class="aba" onclick="pularPara(1,'intro')" data-secao="intro">Introdução</div>
+    <div class="aba" onclick="pularPara(2,'sessao1')" data-secao="sessao1">Sessão 1</div>
+    <div class="aba" onclick="pularPara(3,'sessao2')" data-secao="sessao2">Sessão 2</div>
+    <div class="aba" onclick="pularPara(4,'sessao3')" data-secao="sessao3">Sessão 3</div>
+    <div class="aba" onclick="pularPara(5,'fim')" data-secao="fim">Encerramento</div>
+  </div>
+
+  <div class="controles">
+    <button id="btnAnterior" onclick="folhaAnterior()" aria-label="Página anterior">‹</button>
+    <div class="contador" id="contador">capa</div>
+    <button id="btnProximo" onclick="folhaSeguinte()" aria-label="Próxima página">›</button>
+  </div>
+  <div class="dica">clique nas bordas da página, use as setas do teclado, ou as abas ao lado →</div>
+
+</div>
+
+<script>
+(function(){
+  const folhas = Array.from(document.querySelectorAll('.folha'));
+  const total = folhas.length;
+  let atual = 0;
+
+  const contadorEl = document.getElementById('contador');
+  const btnAnt = document.getElementById('btnAnterior');
+  const btnProx = document.getElementById('btnProximo');
+  const abas = document.querySelectorAll('.aba');
+
+  function zIndexBase(i){ return 100 - i; }
+  function zIndexVirada(i){ return 100 + i; }
+
+  function render(){
+    folhas.forEach((folha, i) => {
+      const virada = i < atual;
+      folha.classList.toggle('virada', virada);
+      folha.style.zIndex = virada ? zIndexVirada(i) : zIndexBase(i);
+    });
+
+    btnAnt.disabled = atual === 0;
+    btnProx.disabled = atual === total;
+
+    if(atual === 0) contadorEl.textContent = 'capa';
+    else if(atual === total) contadorEl.textContent = 'encerramento';
+    else contadorEl.textContent = 'pág. ' + (atual*2) + '–' + (atual*2+1);
+
+    let secaoAtiva = 'capa';
+    if(atual === 1) secaoAtiva = 'intro';
+    else if(atual === 2) secaoAtiva = 'sessao1';
+    else if(atual === 3) secaoAtiva = 'sessao2';
+    else if(atual === 4) secaoAtiva = 'sessao3';
+    else if(atual >= 5) secaoAtiva = 'fim';
+    abas.forEach(a => a.classList.toggle('ativa', a.dataset.secao === secaoAtiva));
+  }
+
+  window.folhaSeguinte = function(){ if(atual < total){ atual++; render(); } };
+  window.folhaAnterior = function(){ if(atual > 0){ atual--; render(); } };
+  window.pularPara = function(indiceFolha){
+    atual = Math.max(0, Math.min(total, indiceFolha));
+    render();
+  };
+
+  document.getElementById('livro').addEventListener('click', (e) => {
+    if(e.target.closest('.campo-escrita') || e.target.closest('.lista-sumario')) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    if(x > rect.width/2) folhaSeguinte();
+    else folhaAnterior();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if(document.activeElement && document.activeElement.classList.contains('campo-escrita')) return;
+    if(e.key === 'ArrowRight') folhaSeguinte();
+    if(e.key === 'ArrowLeft') folhaAnterior();
+  });
+
+  const escalador = document.getElementById('escalador');
+  const LARGURA = 1000, ALTURA = 640;
+  function ajustarEscala(){
+    const margemH = 60, margemV = 150;
+    const escala = Math.min(1, (window.innerWidth - margemH) / LARGURA, (window.innerHeight - margemV) / ALTURA);
+    escalador.style.width  = (LARGURA * escala) + 'px';
+    escalador.style.height = (ALTURA  * escala) + 'px';
+    document.getElementById('livro').style.transform = 'scale(' + escala + ')';
+    document.getElementById('livro').style.transformOrigin = 'top left';
+  }
+  window.addEventListener('resize', ajustarEscala);
+  ajustarEscala();
+
+  render();
+})();
+</script>
+
+</body>
+</html>
