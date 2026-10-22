@@ -1,4 +1,5 @@
 import { memo, useState } from "react";
+import { asset } from "./utils";
 
 /** Negrito e itálico inline: **negrito**, *itálico*. */
 function Inline({ text }) {
@@ -24,7 +25,7 @@ export function ImageSlot({ src, alt, className = "", imgClass = "object-cover" 
           <strong>{src.replace(/^\//, "")}</strong>
         </div>
       ) : (
-        <img src={src} alt={alt ?? ""} loading="lazy" onError={() => setFailed(true)} className={`h-full w-full ${imgClass}`} />
+        <img src={asset(src)} alt={alt ?? ""} loading="lazy" onError={() => setFailed(true)} className={`h-full w-full ${imgClass}`} />
       )}
     </div>
   );

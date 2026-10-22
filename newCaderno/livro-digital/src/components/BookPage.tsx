@@ -1,6 +1,7 @@
 import { memo } from "react";
 import ContentBlock, { ImageSlot } from "./ContentBlock";
 import TableOfContents from "./TableOfContents";
+import { asset } from "./utils";
 
 const SIDES = {
   left: { round: "rounded-l-[3px]", shadow: "shadow-[inset_-10px_0_20px_-14px_rgb(0_0_0/0.25)]", foot: "left-4 sm:left-5" },
@@ -113,7 +114,7 @@ function LeafContent({ leaf, side, onSelect, runningTitle }) {
 
             {page.image && (
               <ImageSlot
-                src={page.image}
+                src={asset(page.image)}
                 alt={page.imageAlt}
                 className="mt-3 min-h-56 flex-1 !rounded-sm !border-2 !border-tinta/70 bg-papel p-1"
                 imgClass="object-contain"

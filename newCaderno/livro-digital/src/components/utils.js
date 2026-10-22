@@ -184,3 +184,7 @@ export function buildBook(book) {
 
   return { leaves };
 }
+
+/** Prefixa caminhos de public/ com a base do site (necessário no GitHub Pages). */
+export const asset = (path) =>
+  path?.startsWith("/") ? import.meta.env.BASE_URL + path.slice(1) : path;
