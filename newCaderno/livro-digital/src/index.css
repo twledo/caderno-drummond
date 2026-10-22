@@ -1,0 +1,113 @@
+@import "tailwindcss";
+
+/* ---------- Identidade visual: Caderno Drummond ---------- */
+@theme {
+  --color-mesa: #0c0908;
+  --color-capa: #f6d3dc;
+  --color-capa-escura: #e8aebf;
+  --color-papel: #ffffff;
+  --color-papel-sombra: #f3dde4;
+  --color-dourado: #2a9d8f;
+  --color-dourado-claro: #f6d3dc;
+  --color-tinta: #1e2a3a;
+  --color-tinta-vermelha: #0f766e;
+  --color-verde-mata: #115e59;
+
+  --font-titulo: "Fraunces", serif;
+  --font-corpo: "Source Serif 4", serif;
+  --font-mono: "IBM Plex Mono", monospace;
+}
+
+html, body {
+  margin: 0;
+  background: var(--color-mesa);
+  background-image:
+    radial-gradient(ellipse at 50% 20%, rgb(255 255 255 / 0.04), transparent 60%),
+    repeating-linear-gradient(45deg, rgb(255 255 255 / 0.012) 0 2px, transparent 2px 4px);
+  font-family: var(--font-corpo);
+}
+
+/* Campos de escrita (contenteditable) */
+.campo-escrita {
+  min-height: 18px;
+  padding: 4px 2px;
+  border-bottom: 1px dashed var(--color-papel-sombra);
+  font-family: var(--font-corpo);
+  font-size: 12px;
+  color: var(--color-tinta);
+  overflow-wrap: anywhere;
+}
+.campo-escrita:empty::before {
+  content: attr(data-placeholder);
+  color: #9aa5b1;
+  font-style: italic;
+}
+.campo-escrita:focus {
+  outline: none;
+  border-bottom-color: var(--color-tinta-vermelha);
+}
+.campo-escrita--bloco {
+  min-height: 60px;
+  padding: 8px;
+  border: 1px dashed var(--color-papel-sombra);
+  border-radius: 3px;
+}
+
+/* Letra capitular */
+.capitular::first-letter {
+  font-family: var(--font-titulo);
+  font-weight: 900;
+  font-size: 36px;
+  float: left;
+  line-height: 0.8;
+  padding-right: 7px;
+  padding-top: 2px;
+  color: var(--color-tinta-vermelha);
+}
+
+/* ---------- Virada de página ---------- */
+@keyframes leaf-turn {
+  from { transform: rotateY(0deg); }
+  to   { transform: rotateY(var(--leaf-end, -180deg)); }
+}
+@keyframes leaf-shade-front {
+  from { opacity: 0; }
+  50%  { opacity: 0.45; }
+  to   { opacity: 0.45; }
+}
+@keyframes leaf-shade-back {
+  0%, 50% { opacity: 0.45; }
+  100%    { opacity: 0; }
+}
+@keyframes page-progress {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+/* Duração da virada: troque 900ms nas 3 regras abaixo. */
+.page-leaf {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  transform-origin: left center; /* gira em torno da lombada */
+  transform-style: preserve-3d;
+  animation: leaf-turn 900ms cubic-bezier(0.55, 0.05, 0.4, 0.95) forwards;
+}
+.page-leaf--spread { right: 0; width: 50%; }                    /* duas páginas */
+.page-leaf--single { left: 0; width: 100%; --leaf-end: -100deg; } /* celular */
+
+.leaf-shade {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+  background: linear-gradient(to right, rgb(0 0 0 / 0.9), rgb(0 0 0 / 0.2));
+}
+.leaf-shade--front { animation: leaf-shade-front 900ms ease-in forwards; }
+.leaf-shade--back  { animation: leaf-shade-back 900ms ease-out forwards; }
+
+/* Voltar página = mesma animação ao contrário */
+    .page-leaf--reverse,
+    .page-leaf--reverse .leaf-shade {
+    animation-direction: reverse;
+    }
