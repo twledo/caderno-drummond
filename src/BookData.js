@@ -214,6 +214,7 @@ export const book = {
             { type: "heading", text: "Conclusão: a necessidade urgente de valorização dos povos indígenas" },
             "A valorização dos povos originários não é apenas um dever histórico ou uma reparação moral; é um compromisso fundamental com a diversidade e o futuro do planeta. Quando garantimos a demarcação de terras, o acesso à educação e a presença de vozes indígenas nos centros de decisão, fortalecemos a democracia brasileira e a preservação do meio ambiente.",
             "Como nos ensinam os intelectuais indígenas e a própria poesia de Drummond, manter viva a memória e os saberes ancestrais é a chave para garantir que as futuras gerações continuem a tecer uma história de respeito, dignidade e pertencimento.",
+            "*Texto escrito pelo aluno Julyano.*",
           ],
         },
       ],
