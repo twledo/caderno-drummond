@@ -70,9 +70,9 @@ export const book = {
   subtitle: "um poeta, sete atividades, e o espaço para você se encontrar em cada uma delas.",
   nameField: "Nome: ______________________  Turma: _______",
   calls: [
-    "Sessão 1 — Marcas da vida",
-    "Sessão 2 — Sete faces do eu leitor",
-    "Sessão 3 — A xícara de cacos",
+    "Marcas da vida",
+    "Sete faces do eu leitor",
+    "A xícara de cacos",
   ],
   footer: ["Caderno de leitura", "Língua Portuguesa"],
   backCover: {

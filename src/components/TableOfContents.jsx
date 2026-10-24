@@ -22,7 +22,6 @@ function TableOfContents({ entries, onSelect }) {
                 entry.level === 0 ? "text-[11.5px]" : "pl-5 text-[10.5px] opacity-80"
               }`}
             >
-              {entry.level === 0 && entry.label && <span className="text-dourado">{entry.label} —</span>}
               <span>{entry.title}</span>
               <span className="min-w-4 flex-1" aria-hidden="true" />
               <span className="tabular-nums opacity-60">{String(entry.pageNumber).padStart(2, "0")}</span>
