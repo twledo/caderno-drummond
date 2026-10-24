@@ -73,6 +73,8 @@ export const book = {
     "Marcas da vida",
     "Sete faces do eu leitor",
     "A xícara de cacos",
+    "O caso do vestido",
+    "Intelectuais indígenas e a resistência da memória",
   ],
   footer: ["Caderno de leitura", "Língua Portuguesa"],
   backCover: {
