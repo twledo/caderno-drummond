@@ -1,15 +1,44 @@
-import { memo } from "react";
+import { memo, useLayoutEffect, useRef, useState } from "react";
 import ContentBlock, { ImageSlot } from "./ContentBlock";
 import TableOfContents from "./TableOfContents";
 
 const SIDES = {
-  left: { round: "rounded-l-[3px]", shadow: "shadow-[inset_-10px_0_20px_-14px_rgb(0_0_0/0.25)]", foot: "left-4 sm:left-5" },
-  right: { round: "rounded-r-[3px]", shadow: "shadow-[inset_10px_0_20px_-14px_rgb(0_0_0/0.25)]", foot: "right-4 sm:right-5" },
-  single: { round: "rounded-[3px]", shadow: "shadow-[inset_10px_0_20px_-14px_rgb(0_0_0/0.25)]", foot: "right-4 sm:right-5" },
+  left: { round: "rounded-l-[3px]", shadow: "shadow-[inset_-10px_0_20px_-14px_rgb(0_0_0/0.25)]", foot: "left-5" },
+  right: { round: "rounded-r-[3px]", shadow: "shadow-[inset_10px_0_20px_-14px_rgb(0_0_0/0.25)]", foot: "right-5" },
+  single: { round: "rounded-[3px]", shadow: "shadow-[inset_10px_0_20px_-14px_rgb(0_0_0/0.25)]", foot: "right-5" },
 };
 
-const PAD_X = "px-6 sm:px-8 lg:px-10";
+const PAD_X = "px-10";
 const MONO = "font-mono uppercase";
+
+
+/** Tamanho fixo (A4) em que as páginas de texto são montadas; depois é escalado para caber. */
+const DESIGN_W = 600;
+const DESIGN_H = 849;
+
+function ScaledPage({ children }) {
+  const ref = useRef(null);
+  const [scale, setScale] = useState(1);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return undefined;
+    const update = () => setScale(el.clientWidth / DESIGN_W);
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+  return (
+    <div ref={ref} className="relative h-full w-full overflow-hidden">
+      <div
+        className="absolute left-0 top-0 origin-top-left"
+        style={{ width: DESIGN_W, height: DESIGN_H, transform: `scale(${scale})` }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
 
 function Cover({ book }) {
   return (
@@ -77,21 +106,26 @@ function LeafContent({ leaf, side, onSelect, runningTitle }) {
       return <BackCover book={leaf.book} />;
 
     case "toc":
-      return <TableOfContents entries={leaf.entries} onSelect={onSelect} />;
+      return (
+        <ScaledPage>
+          <TableOfContents entries={leaf.entries} onSelect={onSelect} />
+        </ScaledPage>
+      );
 
     case "page": {
       const { page, number } = leaf;
       const first = page.blocks[0];
       const dropCapFirst = typeof first === "string" || first?.type === "paragraph";
       return (
+        <ScaledPage>
         <div className="relative flex h-full flex-col font-corpo text-tinta">
-          <div className={`${MONO} flex justify-between px-6 pt-4 text-[8.5px] tracking-[0.14em] text-tinta/50 sm:px-8 lg:px-10`}>
+          <div className={`${MONO} flex justify-between px-10 pt-4 text-[8.5px] tracking-[0.14em] text-tinta/50`}>
             <span>{page.chapterEyebrow}</span>
             <span>{runningTitle}</span>
           </div>
 
           <div
-            className={`flex flex-1 flex-col overflow-y-auto ${PAD_X} pb-10 pt-4 text-[13px] leading-[1.55] lg:pt-5 lg:text-[14px]`}
+            className={`flex flex-1 flex-col overflow-hidden ${PAD_X} pb-10 pt-5 text-[13px] leading-[1.5]`}
           >
             <p
               className={`${MONO} flex items-center gap-2 text-[10.5px] tracking-[0.14em] text-tinta-vermelha before:h-px before:w-4 before:bg-tinta-vermelha`}
@@ -125,6 +159,7 @@ function LeafContent({ leaf, side, onSelect, runningTitle }) {
             {String(number).padStart(2, "0")}
           </footer>
         </div>
+        </ScaledPage>
       );
     }
 

@@ -191,7 +191,7 @@ function ContentBlock({ block, dropCap = false }) {
           <ImageSlot
             src={data.src}
             alt={data.alt}
-            className={`mx-auto w-full ${data.full ? "h-[calc(100dvh-21rem)] min-h-48 bg-papel" : data.compact ? "h-52" : "h-64"}`}
+            className={`mx-auto w-full ${data.full ? "h-[30rem] bg-papel" : data.compact ? "h-52" : "h-64"}`}
             imgClass={data.full ? "object-contain" : "object-cover"}
           />
           {data.caption && (

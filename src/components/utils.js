@@ -13,21 +13,21 @@ export const alignTo = (index, perView) => index - (index % perView);
 
 
 /** Estimativa de linhas por página para capítulos com `flow: true` (texto corrido). */
-const FLOW_CHARS_PER_LINE = 58;
-const FLOW_LINES_FIRST = 46; // página de abertura (tem título e fonte)
-const FLOW_LINES_NEXT = 48;
+const FLOW_CHARS_PER_LINE = 66;
+const FLOW_LINES_FIRST = 33; // página de abertura (tem título e fonte)
+const FLOW_LINES_NEXT = 38;
 
 const blockText = (block) => (typeof block === "string" ? block : block.text ?? "").replace(/\*/g, "");
 const linesOf = (text, perLine = FLOW_CHARS_PER_LINE) => Math.ceil(text.length / perLine);
 
 /** Custo estimado de um bloco, em linhas. */
 function blockCost(block) {
-  if (typeof block !== "string" && block.type === "heading") return 2.5;
-  if (typeof block !== "string" && block.type === "image") return 10;
+  if (typeof block !== "string" && block.type === "heading") return 3;
+  if (typeof block !== "string" && block.type === "image") return block.full ? 26 : block.compact ? 12 : 15;
   if (typeof block !== "string" && block.type === "list") {
-    return block.items.reduce((sum, item) => sum + linesOf(blockText(item), FLOW_CHARS_PER_LINE - 4) + 0.5, 0);
+    return block.items.reduce((sum, item) => sum + linesOf(blockText(item), FLOW_CHARS_PER_LINE - 5) + 0.6, 0);
   }
-  return linesOf(blockText(block)) + 0.6;
+  return linesOf(blockText(block)) + 1;
 }
 
 /** Divide uma lista em itens soltos para poder quebrar entre páginas. */
@@ -50,7 +50,7 @@ function paginateFlow(chapter) {
       let page = pages[pages.length - 1];
       const limit = pages.length === 1 ? FLOW_LINES_FIRST : FLOW_LINES_NEXT;
       const cost = blockCost(piece);
-      const needed = piece.type === "heading" ? cost + 5 : cost; // título não fica sozinho no fim da página
+      const needed = piece.type === "heading" ? cost + 3 : cost; // título não fica sozinho no fim da página
       if (page.used + needed > limit && page.blocks.length > 0) {
         page = { blocks: [], sectionIds: [], used: 0 };
         pages.push(page);
