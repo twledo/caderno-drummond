@@ -71,7 +71,7 @@ function DigitalBook({ book }) {
   useEffect(() => {
     if (!isPlaying) return undefined;
     const id = setTimeout(() => {
-      if (atEnd) setIsPlaying(false);
+      if (atEnd) go({ to: 0 }); // no fim, volta ao começo de tudo
       else go({ delta: 1 });
     }, AUTO_ADVANCE_MS);
     return () => clearTimeout(id);
